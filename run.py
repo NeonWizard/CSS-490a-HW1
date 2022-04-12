@@ -6,13 +6,21 @@ import time
 data_folder = "./data/"
 image_folder = "./images/"
 
-model_path = data_folder + "mobilenet_v2_1.0_224_quant.tflite"
+model_path = data_folder + "mobilenet_v1_1.0_224_quant.tflite"
 label_path = data_folder + "labels_mobilenet_quant_v1_224.txt"
 
-def classify_image(interpreter, image, top_k=1):
+# Read the labels from the text file as a Python list.
+def load_labels(path):
+  with open(path, 'r') as f:
+    return [line.strip() for i, line in enumerate(f.readlines())]
+
+def set_input_tensor(interpreter, image):
   tensor_index = interpreter.get_input_details()[0]['index']
-  input_tensor = interpreter.get_tensor(tensor_index)[0]
+  input_tensor = interpreter.tensor(tensor_index)()[0]
   input_tensor[:, :] = image
+
+def classify_image(interpreter, image, top_k=1):
+  set_input_tensor(interpreter, image)
 
   interpreter.invoke()
   output_details = interpreter.get_output_details()[0]
@@ -24,12 +32,9 @@ def classify_image(interpreter, image, top_k=1):
   ordered = np.argpartition(-output, top_k)
   return [(i, output[i]) for i in ordered[:top_k]][0]
 
-# Read the labels from the text file as a Python list.
-def load_labels(path):
-  with open(path, 'r') as f:
-    return [line.strip() for i, line in enumerate(f.readlines())]
 
 def main():
+
   interpreter = Interpreter(model_path)
   print("Model Loaded Successfully.")
 
