@@ -38,3 +38,6 @@ python downloader/downloader.py \
   -number_of_classes 100 \
   -images_per_class 10
 
+# download benchmarking tool
+wget https://storage.googleapis.com/tensorflow-nightly-public/prod/tensorflow/release/lite/tools/nightly/latest/linux_arm_benchmark_model
+chmod 755 linux_arm_benchmark_model

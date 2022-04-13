@@ -34,7 +34,6 @@ def classify_image(interpreter, image, top_k=1):
 
 
 def main():
-
   interpreter = Interpreter(model_path)
   print("Model Loaded Successfully.")
 
