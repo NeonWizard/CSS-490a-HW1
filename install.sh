@@ -31,3 +31,10 @@ rm -rf data/
 wget https://storage.googleapis.com/download.tensorflow.org/models/tflite/mobilenet_v1_1.0_224_quant_and_labels.zip -P data/
 unzip data/mobilenet_v1_1.0_224_quant_and_labels.zip -d data/
 rm data/mobilenet_v1_1.0_224_quant_and_labels.zip
+
+# download images
+python downloader/downloader.py \
+  -data_root images/ \
+  -number_of_classes 100 \
+  -images_per_class 10
+
