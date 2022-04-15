@@ -21,8 +21,8 @@ avg_acc = sum(accuracies) / len(accuracies)
 max_acc = max(accuracies)
 min_acc = min(accuracies)
 
-print(avg_time, max_time, min_time)
-print(avg_acc, max_acc, min_acc)
+print(f"TIME: Average: {round(avg_time, 2)}ms, Max: {round(max_time, 2)}ms, Min: {round(min_time, 2)}ms")
+print(f"ACCURACY: Average: {round(avg_acc, 2)}%, Max: {round(max_acc, 2)}%, Min: {round(min_acc, 2)}%")
 
 sns.displot(times)
 plt.savefig("time_graph.png")
