@@ -4,6 +4,7 @@ import numpy as np
 import time
 import os
 import pickle
+from tqdm import tqdm
 
 data_folder = "./data/"
 image_folder = "./images/"
@@ -47,41 +48,43 @@ def main():
   bench_data = {}
   class_count = 0
   imagenet_folder = image_folder + "imagenet_images"
-  for classname in os.listdir(imagenet_folder):
-    image_count = 0
-    class_folder = imagenet_folder + "/" + classname
-    for filename in os.listdir(class_folder):
-      image = Image.open(class_folder + "/" + filename).convert('RGB').resize((width, height))
-      bench = {}
+  with tqdm(total=1000, ncols=64) as pbar:
+    for classname in os.listdir(imagenet_folder):
+      image_count = 0
+      class_folder = imagenet_folder + "/" + classname
+      for filename in os.listdir(class_folder):
+        image = Image.open(class_folder + "/" + filename).convert('RGB').resize((width, height))
+        bench = {}
 
-      # Classify the image.
-      time1 = time.time()
-      label_id, prob = classify_image(interpreter, image)
-      time2 = time.time()
-      classification_time = np.round(time2-time1, 3)
-      bench["time"] = classification_time
-      # print("Classification Time =", classification_time, "seconds.")
+        # Classify the image.
+        time1 = time.time()
+        label_id, prob = classify_image(interpreter, image)
+        time2 = time.time()
+        classification_time = np.round(time2-time1, 3)
+        bench["time"] = classification_time
+        # print("Classification Time =", classification_time, "seconds.")
 
-      # Read class labels.
-      labels = load_labels(label_path)
+        # Read class labels.
+        labels = load_labels(label_path)
 
-      # Return the classification label of the image.
-      classification_label = labels[label_id]
-      accuracy = np.round(prob*100, 2)
-      bench["accuracy"] = accuracy
-      # print("Image Label is :", classification_label, ", with Accuracy :", accuracy, "%.")
+        # Return the classification label of the image.
+        classification_label = labels[label_id]
+        accuracy = np.round(prob*100, 2)
+        bench["accuracy"] = accuracy
+        # print("Image Label is :", classification_label, ", with Accuracy :", accuracy, "%.")
 
-      bench_data[classname] = bench
-      image_count += 1
+        bench_data[classname] = bench
+        image_count += 1
 
-      print(f"{class_count * 10 + image_count}/1000")
+        # print(f"{class_count * 10 + image_count}/1000")
+        pbar.update(1)
 
-      if image_count == 10:
+        if image_count == 10:
+          break
+
+      class_count += 1
+      if class_count == 100:
         break
-
-    class_count += 1
-    if class_count == 100:
-      break
 
   with open("benchmark.p", 'wb') as f:
     pickle.dump(bench_data, f)
