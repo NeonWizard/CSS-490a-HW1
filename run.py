@@ -52,6 +52,7 @@ def main():
     for classname in os.listdir(imagenet_folder):
       image_count = 0
       class_folder = imagenet_folder + "/" + classname
+      bench_data[classname] = []
       for filename in os.listdir(class_folder):
         image = Image.open(class_folder + "/" + filename).convert('RGB').resize((width, height))
         bench = {}
@@ -60,7 +61,7 @@ def main():
         time1 = time.time()
         label_id, prob = classify_image(interpreter, image)
         time2 = time.time()
-        classification_time = np.round(time2-time1, 3)
+        classification_time = np.round(time2-time1, 5)
         bench["time"] = classification_time
         # print("Classification Time =", classification_time, "seconds.")
 
@@ -73,7 +74,7 @@ def main():
         bench["accuracy"] = accuracy
         # print("Image Label is :", classification_label, ", with Accuracy :", accuracy, "%.")
 
-        bench_data[classname] = bench
+        bench_data[classname].append(bench)
         image_count += 1
 
         # print(f"{class_count * 10 + image_count}/1000")
